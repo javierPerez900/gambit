@@ -67,7 +67,7 @@ func DeleteProduct(User string, id int) (int, string) {
 		return 400, msg
 	}
 
-	err := bd.DeleteCategory(id)
+	err := bd.DeleteProduct(id)
 	if err != nil {
 		return 400, "Ocurrió un error al intentar	realizar el DELETE del producto " + strconv.Itoa(id) + " > " + err.Error()
 	}
