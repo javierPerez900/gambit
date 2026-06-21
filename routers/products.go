@@ -2,10 +2,13 @@ package routers
 
 import (
 	"encoding/json"
+	"fmt"
+
 	// "fmt"
 	"strconv"
-	// "strings"
-	// "github.com/aws/aws-lambda-go/events"
+	"strings"
+
+	"github.com/aws/aws-lambda-go/events"
 	"github.com/javier/gambit/bd"
 	"github.com/javier/gambit/models"
 )
@@ -75,31 +78,57 @@ func DeleteProduct(User string, id int) (int, string) {
 	return 200, "Delete OK"
 }
 
-// func SelectCategories(body string, request events.APIGatewayV2HTTPRequest) (int, string) {
-// 	var err error
-// 	var CategId int
-// 	var Slug string
+func SelectProduct(request events.APIGatewayV2HTTPRequest) (int, string) {
+	var t models.Product
+	var page, pageSize int
+	var orderType, orderField string
 
-// 	if len(request.QueryStringParameters["categId"]) > 0 {
-// 		CategId, err = strconv.Atoi(request.QueryStringParameters["categId"])
-// 		if err != nil {
-// 			return 500, "Ocurrió un error al intentar convertir en entero el valor " + request.QueryStringParameters["categId"]
-// 		}
-// 	} else {
-// 		if len(request.QueryStringParameters["slug"]) > 0 {
-// 			Slug = request.QueryStringParameters["slug"]
-// 		}
-// 	}
+	param := request.QueryStringParameters
 
-// 	lista, err2 := bd.SelectCategories(CategId, Slug)
-// 	if err2 != nil {
-// 		return 400, "Ocurrió un error al intentar capturar Categoría/s > " + err2.Error()
-// 	}
-
-// 	Categ, err3 := json.Marshal(lista)
-// 	if err3 != nil {
-// 		return 400, "Ocurrió un error al intentar convertir en JSON Categoría/s > " + err3.Error()
-// 	}
+	page, _ = strconv.Atoi(param["page"])
+	pageSize, _ = strconv.Atoi(param["pageSize"])
+	orderType = param["orderType"] // D = Desc. A o Nil = ASC
+	orderField = param["orderField"] // 'I' Id, 'T' Title, 'D' Description, F 'Created At'
+																	 // 'P' Price, 'C' CategId, 'S' Stock
 	
-// 	return 200, string(Categ)
-// }
+	if !strings.Contains("ITDFPCS", orderType) {
+		orderField=""
+	}		
+	
+	var choice string
+
+	if len(param["prodId"]) > 0 {
+		choice="P"
+		t.ProdId, _ =  strconv.Atoi(param["prodId"])
+	} 
+	if len(param["search"]) > 0 {
+		choice="S"
+		t.ProdSearch =  param["search"]
+	} 
+	if len(param["categId"]) > 0 {
+		choice="C"
+		t.ProdCategId, _ =  strconv.Atoi(param["categId"])
+	} 
+	if len(param["slug"]) > 0 {
+		choice="U"
+		t.ProdPath =  param["slug"]
+	} 
+	if len(param["slugCateg"]) > 0 {
+		choice="K"
+		t.ProdCategPath = param["slugCateg"]
+	} 
+	
+	fmt.Println(param)
+	
+	result, err2 := bd.SelectProduct(t, choice, page, pageSize, orderType, orderField)
+	if err2 != nil {
+		return 400, "Ocurrió un error al intentar capturar los resultados de la búsqueda de tipo '" + choice + "' en productos > " + err2.Error()
+	}
+
+	Product, err3 := json.Marshal(result)
+	if err3 != nil {
+		return 400, "Ocurrió un error al intentar convertir en JSON la búsqueda de Productos" + err3.Error()
+	}
+
+	return 200, string(Product)
+}
