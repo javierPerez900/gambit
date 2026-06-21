@@ -91,7 +91,7 @@ func SelectProduct(request events.APIGatewayV2HTTPRequest) (int, string) {
 	orderField = param["orderField"] // 'I' Id, 'T' Title, 'D' Description, F 'Created At'
 																	 // 'P' Price, 'C' CategId, 'S' Stock
 	
-	if !strings.Contains("ITDFPCS", orderType) {
+	if !strings.Contains("ITDFPCS", orderField) {
 		orderField=""
 	}		
 	
