@@ -10,6 +10,12 @@ import (
 )
 
 func Manejadores(path string, method string, body string, headers map[string]string, request events.APIGatewayV2HTTPRequest) (int, string) {
+	fmt.Println("=== DEBUG PATH ===")
+	fmt.Println("Path recibido:", path)
+	fmt.Println("Method:", method)
+	fmt.Println("ID:", request.PathParameters["id"])
+	fmt.Println("Full RawPath:", request.RawPath)
+	fmt.Println("==================")
 	fmt.Println("Voy a procesar " + path + " > " + method)
 
 	id := request.PathParameters["id"]
@@ -96,7 +102,7 @@ func ProcesoCategory(body string, path string, method string, user string, id in
 }
 
 func ProcesoStock(body string, path string, method string, user string, id int, request events.APIGatewayV2HTTPRequest) (int, string) {
-	return  routers.UpdateStock(body, user, id)
+	return routers.UpdateStock(body, user, id)
 }
 
 func ProcesoAddress(body string, path string, method string, user string, id int, request events.APIGatewayV2HTTPRequest) (int, string) {
