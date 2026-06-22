@@ -10,12 +10,6 @@ import (
 )
 
 func Manejadores(path string, method string, body string, headers map[string]string, request events.APIGatewayV2HTTPRequest) (int, string) {
-	fmt.Println("=== DEBUG PATH ===")
-	fmt.Println("Path recibido:", path)
-	fmt.Println("Method:", method)
-	fmt.Println("ID:", request.PathParameters["id"])
-	fmt.Println("Full RawPath:", request.RawPath)
-	fmt.Println("==================")
 	fmt.Println("Voy a procesar " + path + " > " + method)
 
 	id := request.PathParameters["id"]
@@ -70,6 +64,12 @@ func validoAuthorization(path string, method string, headers map[string]string) 
 }
 
 func ProcesoUsers(body string, path string, method string, user string, id string, request events.APIGatewayV2HTTPRequest) (int, string) {
+	if path == "user/me" {
+		switch method {
+		case "PUT":
+			return routers.UpdateUser(body, user)
+		}
+	}
 	return 400, "Method Invalid"
 }
 
