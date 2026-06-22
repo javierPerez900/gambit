@@ -73,6 +73,10 @@ func SelectUser(UserId string) (models.User, error) {
 
 	rows.Scan(&User.UserUUID, &User.UserEmail, &firstName, &lastName, &User.UserStatus, &User.UserDateAdd, &dateUpg)
 
+	User.UserFirstName = firstName.String
+	User.UserLastName = lastName.String
+	User.UserDateUpd = dateUpg.Time.String()
+
 	fmt.Println("Select User > Ejecución Exitosa")
 	return User, nil
 }
