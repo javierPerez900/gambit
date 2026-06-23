@@ -119,7 +119,7 @@ func SelectUsers(Page int) (models.ListUsers, error) {
 	lu.TotalItems = registros
 
 	var rows *sql.Rows
-	rows, err = Db.Query(sentenciaCount)
+	rows, err = Db.Query(sentencia)
 	if err != nil {
 		fmt.Println(err.Error())
 		return lu, err
