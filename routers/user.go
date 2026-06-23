@@ -3,10 +3,7 @@ package routers
 import (
 	"encoding/json"
 	"fmt"
-
-	// "fmt"
 	"strconv"
-	// "strings"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/javier/gambit/bd"

@@ -113,6 +113,16 @@ func ProcesoStock(body string, path string, method string, user string, id int, 
 }
 
 func ProcesoAddress(body string, path string, method string, user string, id int, request events.APIGatewayV2HTTPRequest) (int, string) {
+	switch method {
+	case "POST":
+		return routers.InsertAddress(body, user)
+	// case "PUT":
+	// 	return routers.UpdateCategory(body, user, id)
+	// case "DELETE":
+	// 	return routers.DeleteCategory(body, user, id)
+	// case "GET":
+	// 	return routers.SelectCategories(body, request)
+	}
 	return 400, "Method Invalid"
 }
 
