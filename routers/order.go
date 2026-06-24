@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"strconv"
 
-	// "github.com/aws/aws-lambda-go/events"
+	"github.com/aws/aws-lambda-go/events"
 	"github.com/javier/gambit/bd"
 	"github.com/javier/gambit/models"
 )
@@ -39,7 +39,7 @@ func ValidOrder(o models.Orders) (bool, string) {
 
 	count := 0
 	for _, od := range o.OrderDetails {
-		if od.OD_ProdID == 0{
+		if od.OD_ProdId == 0{
 			return false, "Debe indicar el ID del producto en el detalle de la Orden"
 		}
 		if od.OD_Quantity == 0{
@@ -51,4 +51,36 @@ func ValidOrder(o models.Orders) (bool, string) {
 		return false, "Debe indicar items en la orden"
 	}
 	return true, ""
+}
+
+func SelectOrders(user string, request events.APIGatewayV2HTTPRequest) (int, string) {
+	var fechaDesde, fechaHasta string
+	var orderId int
+	var page int
+
+	if len(request.QueryStringParameters["fechaDesde"]) > 0 {
+		fechaDesde = request.QueryStringParameters["fechaDesde"]
+	}
+	if len(request.QueryStringParameters["fechaHasta"]) > 0 {
+		fechaHasta = request.QueryStringParameters["fechaHasta"]
+	}
+	if len(request.QueryStringParameters["page"]) > 0 {
+		page, _ = strconv.Atoi(request.QueryStringParameters["page"])
+	}
+	if len(request.QueryStringParameters["orderId"]) > 0 {
+		orderId, _ = strconv.Atoi(request.QueryStringParameters["orderId"])
+	}
+	
+	
+	result, err := bd.SelectOrders(user, fechaDesde,fechaHasta, page, orderId)
+	if err != nil {
+		return 400, "Ocurrió un error al intentar capturar los registros de órdenes del " + fechaDesde + " al " + fechaHasta + " > " + err.Error()
+	}
+
+	Orders, err2 := json.Marshal(result)
+	if err2 != nil {
+		return 400, "Ocurrió un error al intentar convertir en JSON el registro de Orden"
+	}
+	
+	return 200, string(Orders)
 }

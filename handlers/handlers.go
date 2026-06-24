@@ -130,8 +130,8 @@ func ProcesoOrder(body string, path string, method string, user string, id int, 
 	switch method{
 	case "POST":
 		return routers.InsertOrder(body, user)
-	// case "PUT":
-	// 	return routers.UpdateAddress(body, user, id)	
+	case "GET":
+		return routers.SelectOrders(user, request)	
 	}
 	return 400, "Method Invalid"
 }
